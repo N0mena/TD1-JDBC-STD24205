@@ -19,8 +19,4 @@ public class Category {
     public String getName() {
         return name;
     }
-
-    public List<Category> getAllCategories() {
-        List<Category> categories = new ArrayList<>();
-    }
 }
