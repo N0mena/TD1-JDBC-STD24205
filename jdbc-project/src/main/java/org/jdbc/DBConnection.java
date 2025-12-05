@@ -1,21 +1,24 @@
 package org.jdbc;
 
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBConnection {
     private Connection connection;
     private Statement statement;
-    private PreparedStatement preparedStatement;
     private ResultSet resultSet;
-    private String url = "jdbc:postgresql://localhost:5432/product_management_db";
-    private String user = "product_manager_user";
-    private String password = "123456";
+    private final String url;
+    private final String user ;
+    private final String password ;
 
     public DBConnection( String url, String user, String password) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
+        this.url = "jdbc:postgresql://localhost:5432/product_management_db";
+        this.user = "product_manager_user";
+        this.password = "123456";
     }
 
     public String getUrl() {
@@ -34,7 +37,7 @@ public class DBConnection {
         try(Connection conn = DriverManager.getConnection(url, user, password)){
             System.out.println("Connected to the database") ;
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException("Connection error", e);
         };
         return null;
     }
