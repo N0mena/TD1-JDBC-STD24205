@@ -15,6 +15,7 @@ public class DBConnection {
     private final String user ;
     private final String password ;
 
+
     public DBConnection( String url, String user, String password) {
         this.url = "jdbc:postgresql://localhost:5432/product_management_db";
         this.user = "product_manager_user";
@@ -40,7 +41,9 @@ public class DBConnection {
             throw new RuntimeException("Connection error", e);
         };
         return null;
+
     }
+
 
 
 }
