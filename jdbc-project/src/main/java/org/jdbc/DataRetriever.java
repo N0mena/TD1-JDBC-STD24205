@@ -5,43 +5,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataRetriever {
-    private List<Category> categories = new ArrayList<>();
-    private List<Product> products = new ArrayList<>();
-    private final String sql_select_category ;
+    private List<Category> categories;
+    private List<Product> products;
     private DBConnection dbconnection;
 
-    public DataRetriever(List<Category> categories, List<Product> product, String select_category) {
+    public DataRetriever(List<Category> categories, List<Product> products, DBConnection dbconnection) {
         this.categories = categories;
-        this.products = product;
-        this.sql_select_category = "select id, name from Product_category";
+        this.products = products;
+        this.dbconnection = dbconnection;
     }
 
-    public List<Category> getAlLCategories() {
-        try(Connection conn = DriverManager.getConnection(dbconnection.getUrl(),dbconnection.getUser(), dbconnection.getPassword());
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(sql_select_category));
+    public List<Category> getAlLCategories() throws SQLException {
+        List<Category> categoryList = new ArrayList<>();
 
-        while(rs.next()){
-            int key;
-            String val;
+        String sql_select = "Select id, name from category";
+        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_select);
+        ResultSet rs = st.executeQuery();
 
-            key = rs.getInt("id");
-            if(rs.wasNull()){
-                key = -1;
-            }
-            val = rs.getString(2);
-            if(rs.wasNull()){
-                val = null;
-            }
-            
-        } catch(SQLException e){
-            e.printStackTrace();
+        while (rs.next()) {
+            Category c = new Category(
+                    rs.getInt("id"),
+                    rs.getString("name")
+            );
+            categoryList.add(c);
         }
-
+        rs.close();
+        st.close();
+        return categoryList;
     }
 
     public List<Product> getProductList(int page, int size) {
-        List<Product> productList = products.stream()
+        List<Product> productList = new ArrayList<>();
+
+        String sql_select1 = "Select id, name from product limit ";
+
+        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_select1);
+        ResultSet rs = st.executeQuery();
+
+        while(rs.next()) {
+            Product p = new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getInt("Price"),
+                    rs.getObject("category")
+            );
+        }
 
     }
 

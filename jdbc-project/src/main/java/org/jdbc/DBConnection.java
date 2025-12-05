@@ -41,7 +41,11 @@ public class DBConnection {
             throw new RuntimeException("Connection error", e);
         };
         return null;
-
+    }
+    public void disconnect()throws SQLException{
+        if(connection != null && !connection.isClosed()){
+            connection.close();
+        }
     }
 
 
