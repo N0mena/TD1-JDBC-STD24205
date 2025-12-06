@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.UIManager.getInt;
+
 public class DataRetriever {
     private List<Category> categories;
     private List<Product> products;
@@ -51,7 +53,9 @@ public class DataRetriever {
         while(rs.next()) {
             Product p = new Product(
                     rs.getInt("id"),
-                    rs.getString("name")
+                    rs.getString("name"),
+                    rs.getFloat("price"),
+                    rs.getString("category")
             );
             productList.add(p);
         }
@@ -59,8 +63,8 @@ public class DataRetriever {
         st.close();
 
         return  productList;
-
     }
+
 
 
 
