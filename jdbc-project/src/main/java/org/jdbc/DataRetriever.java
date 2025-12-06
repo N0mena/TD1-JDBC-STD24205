@@ -1,6 +1,7 @@
 package org.jdbc;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,11 +62,31 @@ public class DataRetriever {
         }
         rs.close();
         st.close();
-
         return  productList;
     }
 
+    public List<Product> getProductsByCriteria(String productName, String categoryName, Instant creationMin, Instant creationMax) throws SQLException {
+        List<Product> productListCriteria = new ArrayList<>();
+//        String searchCategoryName = categoryName.toLowerCase();
+        String searchProductName = productName;
 
+        String sql_search_productName = "Select id, name from product where name ilike ? ";
+        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_search_productName);
+        st.setString(1, productName + "%");
+        ResultSet rs = st.executeQuery();
+
+        while(rs.next()){
+            productListCriteria.add(new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getFloat("price"),
+                    rs.getString("category")
+            ));
+        }
+        rs.close();
+        st.close();
+        return  productListCriteria;
+    }
 
 
 }
