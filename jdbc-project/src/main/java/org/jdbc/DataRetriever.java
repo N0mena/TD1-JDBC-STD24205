@@ -65,28 +65,41 @@ public class DataRetriever {
         return  productList;
     }
 
-    public List<Product> getProductsByCriteria(String productName, String categoryName, Instant creationMin, Instant creationMax) throws SQLException {
+    public List<Product> getProductsByCriteria
+            (String productName, String categoryName, Instant creationMin, Instant creationMax) throws SQLException {
+
+
         List<Product> productListCriteria = new ArrayList<>();
-//        String searchCategoryName = categoryName.toLowerCase();
+
         String searchProductName = productName;
 
         String sql_search_productName = "Select id, name from product where name ilike ? ";
-        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_search_productName);
+        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_search_productName );
         st.setString(1, productName + "%");
         ResultSet rs = st.executeQuery();
 
-        while(rs.next()){
-            productListCriteria.add(new Product(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getFloat("price"),
-                    rs.getString("category")
-            ));
+            String searchCategoryName = categoryName.toLowerCase();
+            String sql_search_categoryName = "Select id, name from product where category ilike ? ";
+            PreparedStatement st1 = dbconnection.getDBConnection().prepareStatement(sql_search_categoryName );
+            st1.setString(1, categoryName + "%");
+            ResultSet rs1 = st1.executeQuery();
+
+        while (rs1.next() && rs.next()) {
+                productListCriteria.add(new Product(
+                        rs1.getInt("id"),
+                        rs1.getString("name"),
+                        rs1.getFloat("price"),
+                        rs1.getString("category")
+                ));
+
+            }
+            rs.close();
+            st.close();
+            rs1.close();
+            st1.close();
+
+            return productListCriteria;
         }
-        rs.close();
-        st.close();
-        return  productListCriteria;
-    }
-
-
 }
+
+
