@@ -69,37 +69,57 @@ public class DataRetriever {
             (String productName, String categoryName, Instant creationMin, Instant creationMax) throws SQLException {
 
 
-        List<Product> productListCriteria = new ArrayList<>();
+        List<Product> productListByCriteria = new ArrayList<>();
 
-        String searchProductName = productName;
+        StringBuilder sql = new StringBuilder("SELECT p.id, p.name, p.creation_date, c.id AS category_id, " +
+                "c.name AS category_name FROM product p  + JOIN category c ON p.category_id = c.id + WHERE 1=1 ");
 
-        String sql_search_productName = "Select id, name from product where name ilike ? ";
-        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_search_productName );
-        st.setString(1, productName + "%");
-        ResultSet rs = st.executeQuery();
+        List<Object> params = new ArrayList<>();
 
-            String searchCategoryName = categoryName.toLowerCase();
-            String sql_search_categoryName = "Select id, name from product where category ilike ? ";
-            PreparedStatement st1 = dbconnection.getDBConnection().prepareStatement(sql_search_categoryName );
-            st1.setString(1, categoryName + "%");
-            ResultSet rs1 = st1.executeQuery();
-
-        while (rs1.next() && rs.next()) {
-                productListCriteria.add(new Product(
-                        rs1.getInt("id"),
-                        rs1.getString("name"),
-                        rs1.getFloat("price"),
-                        rs1.getString("category")
-                ));
-
-            }
-            rs.close();
-            st.close();
-            rs1.close();
-            st1.close();
-
-            return productListCriteria;
+        if (productName != null) {
+            sql.append("AND p.name LIKE ?");
+            params.add("%" + productName + "%");
         }
+
+        if (categoryName != null) {
+            sql.append("AND p.category LIKE ?");
+            params.add("%" + categoryName + "%");
+        }
+
+        if (creationMin != null) {
+            sql.append("AND p.creation_date BETWEEN ? AND ?");
+            params.add(Timestamp.from(creationMin));
+        }
+
+        if (creationMax != null) {
+            sql.append("AND p.creation_date BETWEEN ? AND ?");
+            params.add(Timestamp.from(creationMax));
+        }
+
+        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql.toString());
+
+        for (Object param : params) {
+            st.setObject(1, param);
+        }
+
+        ResultSet rs = st.executeQuery();
+        while(rs.next()){
+            Product p =new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getTimestamp("creation_date").toInstant();
+                    );
+            Category c = new Category(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getCategory(c),
+            );
+            productListByCriteria.add(p);
+        }
+        return  productListByCriteria;
+
+    }
 }
+
 
 
