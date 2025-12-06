@@ -34,22 +34,31 @@ public class DataRetriever {
         return categoryList;
     }
 
-    public List<Product> getProductList(int page, int size) {
+    public List<Product> getProductList(int page, int size) throws SQLException {
         List<Product> productList = new ArrayList<>();
 
-        String sql_select1 = "Select id, name from product limit ";
+        int offset = (page - 1) * size;
+
+        String sql_select1 = "Select id, name from product order by id limit ? offset? ";
 
         PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_select1);
+
+        st.setInt(1, offset);
+        st.setInt(2, size);
+
         ResultSet rs = st.executeQuery();
 
         while(rs.next()) {
             Product p = new Product(
                     rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getInt("Price"),
-                    rs.getObject("category")
+                    rs.getString("name")
             );
+            productList.add(p);
         }
+        rs.close();
+        st.close();
+
+        return  productList;
 
     }
 
