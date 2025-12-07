@@ -18,6 +18,7 @@ public class DataRetriever {
         this.dbconnection = dbconnection;
     }
 
+
     public List<Category> getAlLCategories() throws SQLException {
         List<Category> categoryList = new ArrayList<>();
 
@@ -55,8 +56,8 @@ public class DataRetriever {
             Product p = new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
-                    rs.getFloat("price"),
-                    rs.getString("category")
+                    rs.getInstant("creationDate"),
+                    rs.getCategory("category")
             );
             productList.add(p);
         }
