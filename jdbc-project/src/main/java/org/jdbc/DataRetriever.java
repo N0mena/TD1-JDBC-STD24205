@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.swing.UIManager.getInt;
+
 
 public class DataRetriever {
     private List<Category> categories;
@@ -107,19 +107,23 @@ public class DataRetriever {
             Product p =new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
-                    rs.getTimestamp("creation_date").toInstant();
-                    );
+                    rs.getTimestamp("creation_date").toInstant()
+            );
             Category c = new Category(
                     rs.getInt("id"),
                     rs.getString("name"),
-                    rs.getCategory(c),
+                    rs.getCategory(c)
             );
             productListByCriteria.add(p);
         }
         return  productListByCriteria;
 
     }
+
+
+
 }
+
 
 
 
