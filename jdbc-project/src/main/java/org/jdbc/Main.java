@@ -4,11 +4,12 @@ import java.time.Instant;
 import java.util.List;
 
 public class Main {
+    public List<DBConnection> db;
 
     public static void main(String[] args) {
 
         try {
-            DBConnection db = new DBConnection();
+            DBConnection db = new DBConnection(url , user, password);
             DataRetriever retriever = new DataRetriever(db);
 
             System.out.println("Test category list");
@@ -58,9 +59,13 @@ public class Main {
             retriever.getProductsByCriteria(null, null, null, null)
                     .forEach(System.out::println);
 
-            System.out.println();
-
-
+            System.out.println("");
+            retriever.getProductsByCriteriaAndPage(null, null,null,null,1,10)
+                    .forEach(System.out::println);
+            retriever.getProductsByCriteriaAndPage("Dell", null,null,null,1,5)
+                    .forEach(System.out::println);
+            retriever.getProductsByCriteriaAndPage(null, "informatique",null,null,1,10)
+                    .forEach(System.out::println);
 
         } catch (Exception e) {
             e.printStackTrace();
