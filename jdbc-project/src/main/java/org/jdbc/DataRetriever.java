@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class DataRetriever {
     private List<Category> categories;
     private List<Product> products;
@@ -63,7 +62,7 @@ public class DataRetriever {
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getTimestamp("creationDate").toInstant(),
-                    rs.getCategory("category")
+                    category
             );
             productList.add(p);
         }
@@ -113,7 +112,7 @@ public class DataRetriever {
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getTimestamp("creation_date").toInstant(),
-                    Object category
+                    category
             );
             Category c = new Category(
                     rs.getInt("id"),
