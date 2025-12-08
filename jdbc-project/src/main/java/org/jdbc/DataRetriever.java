@@ -43,20 +43,26 @@ public class DataRetriever {
 
         int offset = (page - 1) * size;
 
-        String sql_select1 = "Select id, name from product order by id limit ? offset? ";
+        String sql_select1 = "SELECT p.id, p.name, p.creation_date, c.id AS category_id, c.name AS category_name  + " +
+                "FROM product p JOIN category c ON p.category_id = c.id + " +
+                "ORDER BY p.id LIMIT ? OFFSET ? ";
 
         PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql_select1);
 
-        st.setInt(1, offset);
-        st.setInt(2, size);
+        st.setInt(1, size);
+        st.setInt(2, offset);
 
         ResultSet rs = st.executeQuery();
 
         while(rs.next()) {
+            Category category = new Category(
+                    rs.getInt("id"),
+                    rs.getString("name")
+            );
             Product p = new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
-                    rs.getInstant("creationDate"),
+                    rs.getTimestamp("creationDate").toInstant(),
                     rs.getCategory("category")
             );
             productList.add(p);
@@ -70,11 +76,10 @@ public class DataRetriever {
             (String productName, String categoryName, Instant creationMin, Instant creationMax) throws SQLException {
 
         List<Product> productListByCriteria = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("SELECT p.id, p.name, p.creation_date, c.id AS category_id, " +
                 "c.name AS category_name FROM product p  + JOIN category c ON p.category_id = c.id + WHERE 1=1 ");
-
-        List<Object> params = new ArrayList<>();
 
         if (productName != null) {
             sql.append("AND p.name LIKE ?");
@@ -98,8 +103,8 @@ public class DataRetriever {
 
         PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql.toString());
 
-        for (Object param : params) {
-            st.setObject(1, param);
+        for (int i = 0; i < params.size(); i++) {
+            st.setObject(i + 1, params.get(i));
         }
 
         ResultSet rs = st.executeQuery();
@@ -107,12 +112,12 @@ public class DataRetriever {
             Product p = new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
-                    rs.getTimestamp("creation_date").toInstant()
+                    rs.getTimestamp("creation_date").toInstant(),
+                    Object category
             );
             Category c = new Category(
                     rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getCategory(c)
+                    rs.getString("name")
             );
             productListByCriteria.add(p);
         }
@@ -120,9 +125,72 @@ public class DataRetriever {
 
     }
 
-    List<Product>  getProductsByCriteria
-            (String productName, String categoryName, Instant creationMin, Instant creationMax, int page, int size) throws SQLException{
-        List<Product> productListByCriteriaAndPage = new ArrayList<>();
+    public List<Product> getProductsByCriteriaAndPage(
+            String productName, String categoryName, Instant creationMin, Instant creationMax, int page, int size) throws SQLException {
+
+        List<Product> finalList = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        int offset = (page - 1) * size;
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.id, p.name, p.creation_date, c.id AS category_id, c.name AS category_name " +
+                        "FROM product p JOIN category c ON p.category_id = c.id WHERE 1=1 "
+        );
+
+        if (productName != null) {
+            sql.append("AND p.name ILIKE ? ");
+            params.add("%" + productName + "%");
+        }
+
+        if (categoryName != null) {
+            sql.append("AND c.name ILIKE ? ");
+            params.add("%" + categoryName + "%");
+        }
+
+        if (creationMin != null) {
+            sql.append("AND p.creation_date >= ? ");
+            params.add(Timestamp.from(creationMin));
+        }
+
+        if (creationMax != null) {
+            sql.append("AND p.creation_date <= ? ");
+            params.add(Timestamp.from(creationMax));
+        }
+
+        sql.append("ORDER BY p.id LIMIT ? OFFSET ?");
+
+        PreparedStatement st = dbconnection.getDBConnection().prepareStatement(sql.toString());
+
+        int index = 1;
+        for (Object param : params) {
+            st.setObject(index++, param);
+        }
+
+        st.setInt(index++, size);
+        st.setInt(index, offset);
+
+        ResultSet rs = st.executeQuery();
+
+        while (rs.next()) {
+            Category category = new Category(
+                    rs.getInt("category_id"),
+                    rs.getString("category_name")
+            );
+
+            Product p = new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getTimestamp("creation_date").toInstant(),
+                    category
+            );
+
+            finalList.add(p);
+        }
+
+        rs.close();
+        st.close();
+        return finalList;
 
 
     }
