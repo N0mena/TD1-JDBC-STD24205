@@ -62,7 +62,7 @@ public class DataRetriever {
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getTimestamp("creationDate").toInstant(),
-                    category
+                    categories.get(rs.getInt("category_id"))
             );
             productList.add(p);
         }
@@ -108,15 +108,15 @@ public class DataRetriever {
 
         ResultSet rs = st.executeQuery();
         while(rs.next()){
-            Product p = new Product(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getTimestamp("creation_date").toInstant(),
-                    category
-            );
             Category c = new Category(
                     rs.getInt("id"),
                     rs.getString("name")
+            );
+            Product p = new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getTimestamp("creationDate").toInstant(),
+                    categories.get(rs.getInt("category_id"))
             );
             productListByCriteria.add(p);
         }
@@ -181,7 +181,7 @@ public class DataRetriever {
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getTimestamp("creation_date").toInstant(),
-                    category
+                    categories.get(rs.getInt("category_id"))
             );
 
             finalList.add(p);
