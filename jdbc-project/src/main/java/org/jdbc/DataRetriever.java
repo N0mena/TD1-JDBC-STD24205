@@ -69,7 +69,6 @@ public class DataRetriever {
     public List<Product> getProductsByCriteria
             (String productName, String categoryName, Instant creationMin, Instant creationMax) throws SQLException {
 
-
         List<Product> productListByCriteria = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("SELECT p.id, p.name, p.creation_date, c.id AS category_id, " +
@@ -105,7 +104,7 @@ public class DataRetriever {
 
         ResultSet rs = st.executeQuery();
         while(rs.next()){
-            Product p =new Product(
+            Product p = new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getTimestamp("creation_date").toInstant()
@@ -121,7 +120,12 @@ public class DataRetriever {
 
     }
 
+    List<Product>  getProductsByCriteria
+            (String productName, String categoryName, Instant creationMin, Instant creationMax, int page, int size) throws SQLException{
+        List<Product> productListByCriteriaAndPage = new ArrayList<>();
 
+
+    }
 
 }
 

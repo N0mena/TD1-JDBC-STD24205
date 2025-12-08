@@ -11,13 +11,12 @@ public class Main {
             DBConnection db = new DBConnection();
             DataRetriever retriever = new DataRetriever(db);
 
-
             System.out.println("Test category list");
             List<Category> allCategories = retriever.getAlLCategories();
             allCategories.forEach(System.out::println);
 
             System.out.println("Test products list by page and size");
-            List<Product> 
+            retriever.getProductsByCriteria()
 
             System.out.println("Filter by productName = 'Dell'");
             retriever.getProductsByCriteria("Dell", null, null, null)
