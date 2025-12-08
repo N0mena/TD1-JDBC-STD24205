@@ -1,6 +1,7 @@
 package org.jdbc;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -8,9 +9,17 @@ public class Main {
 
     public static void main(String[] args) {
 
+        String url = "jdbc:postgresql://localhost:5432/product_management_db";
+        String user = "product_manager_user";
+        String password = "123456";
+
+        List<Product> products = new ArrayList<>();
+        List<Category> categories = new ArrayList<>();
+
+
         try {
             DBConnection db = new DBConnection(url , user, password);
-            DataRetriever retriever = new DataRetriever(db);
+            DataRetriever retriever = new DataRetriever(categories, products ,db);
 
             System.out.println("Test category list");
             List<Category> allCategories = retriever.getAlLCategories();
