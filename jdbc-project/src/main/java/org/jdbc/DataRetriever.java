@@ -191,11 +191,5 @@ public class DataRetriever {
         st.close();
         return finalList;
 
-
     }
-
 }
-
-
-
-

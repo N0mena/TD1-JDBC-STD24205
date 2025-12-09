@@ -25,9 +25,6 @@ public class Main {
             List<Category> allCategories = retriever.getAlLCategories();
             allCategories.forEach(System.out::println);
 
-            System.out.println("Test products list by page and size");
-            retriever.getProductsByCriteria();
-
             System.out.println("Filter by productName = 'Dell'");
             retriever.getProductsByCriteria("Dell", null, null, null)
                     .forEach(System.out::println);
@@ -81,5 +78,4 @@ public class Main {
         }
 
     }
-
 }
